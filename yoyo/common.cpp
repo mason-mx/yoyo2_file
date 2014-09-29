@@ -49,7 +49,7 @@ int parseStringtoArrayEx(int* des, const char* src)
 }
 #endif
 
-int parseLottery(int pArray[LOTTERIES_ROW][3], TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH])
+int parseLottery(int pArray[MAX_HISTORY_NUM][3], TCHAR pLotteries[MAX_HISTORY_NUM][HISTORY_PATH])
 {
     FILE *fp1;
     char buf[HISTORY_PATH];
@@ -68,7 +68,7 @@ int parseLottery(int pArray[LOTTERIES_ROW][3], TCHAR pLotteries[LOTTERIES_ROW][H
 		}
     }
 
-    while((!feof(fp1)) && (i<LOTTERIES_ROW))       //当文件指针fp1指向文件末尾时，feof返回0，否则返回1，该句作用是只要未到末尾则进入循环
+    while((!feof(fp1)) && (i<MAX_HISTORY_NUM))       //当文件指针fp1指向文件末尾时，feof返回0，否则返回1，该句作用是只要未到末尾则进入循环
     {
         memset(buf, 0, HISTORY_PATH);       //buf字符串清0
         fgets(buf, HISTORY_PATH, fp1);      //从fp1文件当前指针读取一行内容到buf

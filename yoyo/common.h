@@ -5,7 +5,7 @@ int getCombos(char *filename);
 COMBO_YOYO * initCombo();
 COMBO_YOYO * initCombo(int icombos, char *filename);
 int staCombos(int *parray, int *pEnable,int *pNumber, COMBO_YOYO *pcombos, int n, ULONG *numbers);
-int parseLottery(int pArray[LOTTERIES_ROW][3], TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH]);
+int parseLottery(int pArray[MAX_HISTORY_NUM][3], TCHAR pLotteries[MAX_HISTORY_NUM][HISTORY_PATH]);
 int parseLottery(char *filename, int pArray[MAX_HISTORY_NUM][3], TCHAR pLotteries[MAX_HISTORY_NUM][HISTORY_PATH]);
 int saveLottery(int* pArray);
 int saveLottery(int* pArray, char *filename);

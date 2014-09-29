@@ -238,6 +238,10 @@ static int ShowLotteryHistory(HWND hDlg)
 		if(getImportedHisFile(hisf))
 		rel = parseLottery(hisf, lotteries, pLotteries);
 	}
+	else
+	{
+		rel = parseLottery(lotteries, pLotteries);
+	}
 	if(rel > 0)
 	{
 		SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
@@ -256,15 +260,23 @@ static void ClearLotteryHistory(HWND hDlg)
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
 	sprintf(filename, "%d_w.txt", selectedLottery);
 	remove(filename);
-	if(hisFileImported)
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
+	remove(filename);
+	/*if(hisFileImported)
 	{
 		char hisf[MAX_PATH] = {0};
 		if(getImportedHisFile(hisf)) remove(hisf);
+	}*/
+	for(int i = 0; i < icombosF;i++)
+	{
+		combosF[i].weight = 1.0;
 	}
+	hisFileImported = 0;
+	prepareLotteries();
 	remove("importh.txt");
 	prepareWeight(icombosF);
 	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
-	MessageBox(hDlg, TEXT("請重新導入歷史出獎號！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
+	MessageBox(hDlg, TEXT("請重新導入歷史出獎號，或者手動添加！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
 	SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), TEXT("無記錄"));
 }
 
@@ -330,13 +342,13 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 						TCHAR hisn[MAX_PATH] = {0};
 						swprintf(hisn,TEXT("共有%d個歷史出獎號"),rel);
 						SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), hisn);
-						ShowLotteryHistory(hDlg);
 					}
 				}
 				else
 				{
 					SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), TEXT("無記錄"));
 				}
+				ShowLotteryHistory(hDlg);
 			}
 			return (INT_PTR)TRUE;
 		case WM_COMMAND:

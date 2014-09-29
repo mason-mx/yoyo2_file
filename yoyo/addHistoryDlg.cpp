@@ -88,7 +88,7 @@ int SaveEdittoFile(HWND hDlg)
 	if(getImportedHisFile(hisf))
 		return saveLottery(parray, hisf);
 	else
-		return 0;
+		return saveLottery(parray);
 }
 
 INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)

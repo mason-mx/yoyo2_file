@@ -6,6 +6,356 @@ extern int selectedLottery;
 
 static int *dst_array/*=(int *)malloc(sizeof(int)*8)*/,top=0,count=0;//中间数组，存放中间求解过程，count计数所有的组合个数
 
+
+//Only support 0~9 chars
+int parseStringtoArray(int* des, const char* src)
+{
+	int i, ret = 0, len = strlen(src);
+	for(i=0; i<len; i++)
+	{
+		if('0' <= src[i] && '9' >= src[i])
+		{
+			des[ret++] = src[i]-'0';
+		}
+	}
+	return ret;
+}
+
+#if (NUMBER_TOTAL > 10)
+//support integer
+int parseStringtoArrayEx(int* des, const char* src)
+{
+	int i, ret = 0, len = strlen(src);
+	char tmp[4] = {0};
+	int j = 0;
+	for(i=0; i<len; i++)
+	{
+		if(' ' == src[i])
+		{
+			des[ret++] = atoi(tmp);
+			j = 0;
+			memset(tmp, 0, 4);
+		}
+		else
+		{
+			tmp[j++] = src[i];
+		}
+		if(i == len-1)
+		{
+			des[ret++] = atoi(tmp);
+		}
+	}
+	return ret;
+}
+#endif
+
+int parseLottery(int pArray[LOTTERIES_ROW][3], TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH])
+{
+    FILE *fp1;
+    char buf[HISTORY_PATH];
+	char filename[MAX_PATH];
+	int i = 0;
+
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
+    if( (fp1=fopen(filename,"r"))==NULL )
+    {
+        printf("Cannot open the file");
+		if ((fp1=fopen(filename,"w+"))==NULL)
+		{
+			printf("create the file failed.");
+			//getch();
+			return 0;
+		}
+    }
+
+    while((!feof(fp1)) && (i<LOTTERIES_ROW))       //当文件指针fp1指向文件末尾时，feof返回0，否则返回1，该句作用是只要未到末尾则进入循环
+    {
+        memset(buf, 0, HISTORY_PATH);       //buf字符串清0
+        fgets(buf, HISTORY_PATH, fp1);      //从fp1文件当前指针读取一行内容到buf
+		if(2 > strlen(buf)) break;
+		if(pLotteries != NULL)
+			MultiByteToWideChar(CP_THREAD_ACP,MB_USEGLYPHCHARS,buf,strlen(buf),pLotteries[i],HISTORY_PATH);   
+        parseStringtoArray(pArray[i], buf);
+		i ++;
+    }
+
+    fclose(fp1);
+
+    return i;
+}
+
+int parseLottery(char *filename, int pArray[MAX_HISTORY_NUM][3], TCHAR pLotteries[MAX_HISTORY_NUM][HISTORY_PATH])
+{
+    FILE *fp1;
+    char buf[HISTORY_PATH];
+	//char filename[MAX_PATH];
+	int i = 0;
+
+	//sprintf(filename, filename, selectedLottery);
+	printf("Using file %s\r\n", filename);
+    if( (fp1=fopen(filename,"r"))==NULL )
+    {
+        printf("Cannot open the file\r\n");
+		if ((fp1=fopen(filename,"w+"))==NULL)
+		{
+			printf("create the file failed.\r\n");
+			//getch();
+			return 0;
+		}
+    }
+
+    while((!feof(fp1)) && (i<MAX_HISTORY_NUM)) 
+    {
+        memset(buf, 0, HISTORY_PATH);
+        fgets(buf, HISTORY_PATH, fp1);
+		if(2 > strlen(buf)) break; 
+		if(pLotteries != NULL)
+			MultiByteToWideChar(CP_THREAD_ACP,MB_USEGLYPHCHARS,buf,strlen(buf),pLotteries[i],HISTORY_PATH);   
+        parseStringtoArray(pArray[i], buf);
+		i ++;
+    }
+
+    fclose(fp1);
+
+    return i;
+}
+
+//Only support 0~9 chars
+int buildString(char* dest, int* pArray)
+{
+	int i;
+	//Build a string like "0 1 2"
+	for(i=0; i<LOTTERIES_COL; i++)
+	{
+		dest[2*i]=pArray[i]+'0';
+		dest[2*i+1]=' ';
+	}
+	dest[2*LOTTERIES_COL - 1] = '\0';
+	return 1;
+}
+
+#if (NUMBER_TOTAL > 10)
+//support integer
+int buildStringEx(char* dest, int* pArray)
+{
+	//char str[80];
+	//int data[5]={4, 5, 13, 2, 5};
+	int i,L = 0;
+	//Build a string like "0 1 2 10 11 12"
+	for (i=0;i<LOTTERIES_COL;i++) {
+		if  (i<4) sprintf(dest+L,"%d ",pArray[i]);
+		else sprintf(dest+L,"%d ",pArray[i]); 
+		L = strlen(dest);
+	};
+	//printf("%s",str);
+	return 1;
+}
+#endif
+
+int saveLottery(int* pArray)
+{
+#if 0
+	char buf[LOTTERY_PATH];
+	FILE *fp;
+	char ch;
+
+	buildString(buf, pArray);
+	printf(buf);
+	
+	if((fp=fopen("lotteries.txt","at+"))==NULL){
+		printf("Cannot open file strike any key exit!\n");
+		return 0;
+	}
+	fputc('\n',fp);
+	fputs(buf,fp);
+	rewind(fp);
+	ch=fgetc(fp);
+
+	while(ch!=EOF){
+		putchar(ch);
+		ch=fgetc(fp);
+	}
+	printf("Save a lottery successfully\n");
+	fclose(fp);
+    return 1;
+#endif
+
+	FILE *fp;
+	char buff1[HISTORY_NUM][HISTORY_PATH];
+	int i=0;
+	char buf[HISTORY_PATH];
+	char filename[MAX_PATH];
+
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
+
+	buildString(buf, pArray);
+	//printf(buf);
+
+    //打开存储文件
+	if ((fp=fopen(filename,"r"))==NULL)
+	{
+		//printf("Can not open the file");
+		//getch();
+		//return 0;
+	} 
+	else
+	{
+		ZeroMemory(buff1,sizeof(buff1));
+		while ((!feof(fp)) && (i < HISTORY_NUM))
+		{			
+			fgets(buff1[i],sizeof(buff1[i]),fp);
+			i++;
+		}
+	}
+	fclose(fp);
+
+    //打开存储文件,将排好序的数据重新写入文件中
+	if ((fp=fopen(filename,"w"))==NULL)
+	{
+		printf("Can not write the file");
+		//getch();
+		return 0;
+	} 
+	else
+	{   		
+		fputs(buf,fp);
+		if(i > 0)
+			fputc('\n',fp);
+		//写入文本文件
+		int k=0;
+		while(k<=i)
+		{
+			fputs(buff1[k],fp);
+			//fprintf(fp,"%i\n",fScore[k]);
+			k++;
+		}
+	}	
+	fclose(fp);
+	return 1;
+}
+
+int saveLottery(int* pArray, char *filename)
+{
+	FILE *fp;
+	char buff1[HISTORY_NUM][HISTORY_PATH];
+	int i=0;
+	char buf[HISTORY_PATH];
+
+	buildString(buf, pArray);
+	//printf(buf);
+
+    //打开存储文件
+	if ((fp=fopen(filename,"r"))==NULL)
+	{
+		//printf("Can not open the file");
+		//getch();
+		//return 0;
+	} 
+	else
+	{
+		ZeroMemory(buff1,sizeof(buff1));
+		while ((!feof(fp)) && (i < HISTORY_NUM))
+		{			
+			fgets(buff1[i],sizeof(buff1[i]),fp);
+			i++;
+		}
+	}
+	fclose(fp);
+
+    //打开存储文件,将排好序的数据重新写入文件中
+	if ((fp=fopen(filename,"w"))==NULL)
+	{
+		printf("Can not write the file");
+		//getch();
+		return 0;
+	} 
+	else
+	{   		
+		fputs(buf,fp);
+		if(i > 0)
+			fputc('\n',fp);
+		//写入文本文件
+		int k=0;
+		while(k<=i)
+		{
+			fputs(buff1[k],fp);
+			//fprintf(fp,"%i\n",fScore[k]);
+			k++;
+		}
+	}	
+	fclose(fp);
+	return 1;
+}
+int prepareWeight(int combo_n)
+{
+
+	FILE *fp;
+	int i=0;
+	double def = 1.0;
+	char filename[MAX_PATH];
+
+	sprintf(filename, "%d_w.txt", selectedLottery);
+
+    //打开存储文件
+	if ((fp=fopen(filename,"r"))==NULL)
+	{
+		if ((fp=fopen(filename,"w"))==NULL)
+		{
+			printf("Can not write the file");
+			//getch();
+			return 0;
+		} 
+		else
+		{   
+			for(i=0;i<combo_n;i++)
+			{
+				//char scorestr[10];
+				//itoa(i,scorestr,10);
+				//fscanf(fp,"%lf\n",i);
+				fprintf(fp,"%f",def);
+				fprintf(fp,"\n");
+			}
+			
+		}	
+		fclose(fp);
+	} 
+	else
+	{
+		//
+	}
+	fclose(fp);
+	
+	return 1;
+}
+
+int prepareLotteries()
+{
+
+	FILE *fp;
+	char filename[MAX_PATH];
+
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
+
+    //打开存储文件
+	if ((fp=fopen(filename,"r"))==NULL)
+	{
+		if ((fp=fopen(filename,"w"))==NULL)
+		{
+			printf("Can not write the file");
+			//getch();
+			return 0;
+		}
+		fclose(fp);
+	} 
+	else
+	{
+		//
+	}
+	fclose(fp);
+	
+	return 1;
+}
+
 //support integer
 int parseChartoArrayEx(int* des, const char* src)
 {
@@ -32,7 +382,7 @@ int parseChartoArrayEx(int* des, const char* src)
 	return ret;
 }
 
-int parseWeight(double *pArray, bool cal)//, TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH])
+int parseWeight(double *pArray)
 {
     FILE *fp1;
     char buf[HISTORY_PATH];
@@ -288,7 +638,7 @@ COMBO_YOYO * initCombo()
 	}
 
 	//
-	parseWeight(pWeight, false);
+	parseWeight(pWeight);
 	
 	//Do combine to assign destnation array;
     COMBO_YOYO *combos=(COMBO_YOYO *)malloc(sizeof(COMBO_YOYO)*icombos);
@@ -331,6 +681,80 @@ COMBO_YOYO * initCombo()
 	free(parray);
 	free(dst_array);
 	free(combo_n);
+	return combos;
+}
+
+int getCombos(char *filename)
+{
+    FILE *fp1;
+    char buf[HISTORY_PATH];
+	//char filename[MAX_PATH];
+	int i = 0;
+
+	//sprintf(filename, filename, selectedLottery);
+	printf("Using file %s\r\n", filename);
+    if( (fp1=fopen(filename,"r"))==NULL )
+    {
+        printf("Cannot open the file\r\n");
+		if ((fp1=fopen(filename,"w+"))==NULL)
+		{
+			printf("create the file failed.\r\n");
+			//getch();
+			return 0;
+		}
+    }
+
+    while(!feof(fp1))
+    {
+        memset(buf, 0, HISTORY_PATH);
+        fgets(buf, HISTORY_PATH, fp1); 
+		if(2 > strlen(buf)) break; 
+        //parseStringtoArray(pArray[i], buf);
+		i ++;
+    }
+
+    fclose(fp1);
+
+    return i;
+}
+
+COMBO_YOYO * initCombo(int icombos, char *filename)
+{
+	int i=0;
+	double pWeight[COMBOS_N] = {0.0};
+
+	parseWeight(pWeight);
+	
+	//Do combine to assign destnation array;
+    COMBO_YOYO *combos=(COMBO_YOYO *)malloc(sizeof(COMBO_YOYO)*icombos);
+	FILE *fp1;
+    char buf[HISTORY_PATH];
+
+	printf("Using file %s\r\n", filename);
+    if( (fp1=fopen(filename,"r"))==NULL )
+    {
+        printf("Cannot open the file\r\n");
+		if ((fp1=fopen(filename,"w+"))==NULL)
+		{
+			printf("create the file failed.\r\n");
+			//getch();
+			return 0;
+		}
+    }
+
+    while(!feof(fp1)) 
+    {
+        memset(buf, 0, HISTORY_PATH);
+        fgets(buf, HISTORY_PATH, fp1);
+		if(2 > strlen(buf)) break; 
+		combos[i].combo_n = IMPORT_COMBOS_WIDTH;
+		combos[i].combo_array = (int *)malloc(sizeof(int)*IMPORT_COMBOS_WIDTH);
+        parseStringtoArray(combos[i].combo_array, buf);
+		combos[i].weight = pWeight[i];
+		i ++;
+    }
+
+    fclose(fp1);
 	return combos;
 }
 
@@ -411,7 +835,7 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 		}
 		//printf("]");
 		nn = weightNumber(pcombos[i], numbers, hit);
-		if((i == PRINT_N) || (PRINT_N == -1)) printf("%d hit %d | weight:%lf\n", pcombos[i].combo_n, hit, pcombos[i].weight);
+		if((i == PRINT_N) || (PRINT_N == -1)) printf("%d hit %d | *%lf=weight:%lf\n", pcombos[i].combo_n, hit, nn, pcombos[i].weight);
 		//if(i == PRINT_N) printf("WRITE to >>> weight:%lf\n", pcombos[i].weight);
 		fprintf(fp,"%f",pcombos[i].weight);
 		fprintf(fp,"\n");
@@ -487,263 +911,81 @@ int staWeight(int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int n, ULONG *num
 	return 0;
 }
 
-//Only support 0~9 chars
-int parseStringtoArray(int* des, const char* src)
+int saveImportedCombosFile(char *filename)
 {
-	int i, ret = 0, len = strlen(src);
-	for(i=0; i<len; i++)
-	{
-		if('0' <= src[i] && '9' >= src[i])
-		{
-			des[ret++] = src[i]-'0';
-		}
-	}
-	return ret;
-}
-
-#if (NUMBER_TOTAL > 10)
-//support integer
-int parseStringtoArrayEx(int* des, const char* src)
-{
-	int i, ret = 0, len = strlen(src);
-	char tmp[4] = {0};
-	int j = 0;
-	for(i=0; i<len; i++)
-	{
-		if(' ' == src[i])
-		{
-			des[ret++] = atoi(tmp);
-			j = 0;
-			memset(tmp, 0, 4);
-		}
-		else
-		{
-			tmp[j++] = src[i];
-		}
-		if(i == len-1)
-		{
-			des[ret++] = atoi(tmp);
-		}
-	}
-	return ret;
-}
-#endif
-
-int parseLottery(int pArray[LOTTERIES_ROW][3], TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH])
-{
-    FILE *fp1;
-    char buf[HISTORY_PATH];
-	char filename[MAX_PATH];
-	int i = 0;
-
-	sprintf(filename, "lotteries%d.txt", selectedLottery);
-    if( (fp1=fopen(filename,"r"))==NULL )
-    {
-        printf("Cannot open the file");
-		if ((fp1=fopen(filename,"w+"))==NULL)
-		{
-			printf("create the file failed.");
-			//getch();
-			return 0;
-		}
-    }
-
-    while((!feof(fp1)) && (i<LOTTERIES_ROW))       //当文件指针fp1指向文件末尾时，feof返回0，否则返回1，该句作用是只要未到末尾则进入循环
-    {
-        memset(buf, 0, HISTORY_PATH);       //buf字符串清0
-        fgets(buf, HISTORY_PATH, fp1);      //从fp1文件当前指针读取一行内容到buf
-		if(2 > strlen(buf)) break;
-		if(pLotteries != NULL)
-			MultiByteToWideChar(CP_THREAD_ACP,MB_USEGLYPHCHARS,buf,strlen(buf),pLotteries[i],HISTORY_PATH);   
-        parseStringtoArray(pArray[i], buf);
-		i ++;
-    }
-
-    fclose(fp1);
-
-    return i;
-}
-
-//Only support 0~9 chars
-int buildString(char* dest, int* pArray)
-{
-	int i;
-	//Build a string like "0 1 2"
-	for(i=0; i<LOTTERIES_COL; i++)
-	{
-		dest[2*i]=pArray[i]+'0';
-		dest[2*i+1]=' ';
-	}
-	dest[2*LOTTERIES_COL - 1] = '\0';
-	return 1;
-}
-
-#if (NUMBER_TOTAL > 10)
-//support integer
-int buildStringEx(char* dest, int* pArray)
-{
-	//char str[80];
-	//int data[5]={4, 5, 13, 2, 5};
-	int i,L = 0;
-	//Build a string like "0 1 2 10 11 12"
-	for (i=0;i<LOTTERIES_COL;i++) {
-		if  (i<4) sprintf(dest+L,"%d ",pArray[i]);
-		else sprintf(dest+L,"%d ",pArray[i]); 
-		L = strlen(dest);
-	};
-	//printf("%s",str);
-	return 1;
-}
-#endif
-
-int saveLottery(int* pArray)
-{
-#if 0
-	char buf[LOTTERY_PATH];
 	FILE *fp;
-	char ch;
 
-	buildString(buf, pArray);
-	printf(buf);
-	
-	if((fp=fopen("lotteries.txt","at+"))==NULL){
-		printf("Cannot open file strike any key exit!\n");
-		return 0;
-	}
-	fputc('\n',fp);
-	fputs(buf,fp);
-	rewind(fp);
-	ch=fgetc(fp);
-
-	while(ch!=EOF){
-		putchar(ch);
-		ch=fgetc(fp);
-	}
-	printf("Save a lottery successfully\n");
-	fclose(fp);
-    return 1;
-#endif
-
-	FILE *fp;
-	char buff1[HISTORY_NUM][HISTORY_PATH];
-	int i=0;
-	char buf[HISTORY_PATH];
-	char filename[MAX_PATH];
-
-	sprintf(filename, "lotteries%d.txt", selectedLottery);
-
-	buildString(buf, pArray);
-	//printf(buf);
-
-    //打开存储文件
-	if ((fp=fopen(filename,"r"))==NULL)
+	if ((fp=fopen("importc.txt","w"))==NULL)
 	{
-		//printf("Can not open the file");
-		//getch();
-		//return 0;
-	} 
-	else
-	{
-		ZeroMemory(buff1,sizeof(buff1));
-		while ((!feof(fp)) && (i < HISTORY_NUM))
-		{			
-			fgets(buff1[i],sizeof(buff1[i]),fp);
-			i++;
-		}
-	}
-	fclose(fp);
-
-    //打开存储文件,将排好序的数据重新写入文件中
-	if ((fp=fopen(filename,"w"))==NULL)
-	{
-		printf("Can not write the file");
+		printf("Can not write the importc file\r\n");
 		//getch();
 		return 0;
 	} 
 	else
 	{   		
-		fputs(buf,fp);
-		if(i > 0)
-			fputc('\n',fp);
-		//写入文本文件
-		int k=0;
-		while(k<=i)
-		{
-			fputs(buff1[k],fp);
-			//fprintf(fp,"%i\n",fScore[k]);
-			k++;
-		}
+		fprintf(fp,filename);
 	}	
 	fclose(fp);
 	return 1;
 }
 
-int prepareWeight(int combo_n)
+int getImportedCombosFile(char *filename)
 {
-
 	FILE *fp;
-	int i=0;
-	double def = 1.0;
-	char filename[MAX_PATH];
+	char buf[MAX_PATH];
 
-	sprintf(filename, "%d_w.txt", selectedLottery);
-
-    //打开存储文件
-	if ((fp=fopen(filename,"r"))==NULL)
+	if ((fp=fopen("importc.txt","r"))==NULL)
 	{
-		if ((fp=fopen(filename,"w"))==NULL)
-		{
-			printf("Can not write the file");
-			//getch();
-			return 0;
-		} 
-		else
-		{   
-			for(i=0;i<COMBOS_N;i++)
-			{
-				//char scorestr[10];
-				//itoa(i,scorestr,10);
-				//fscanf(fp,"%lf\n",i);
-				fprintf(fp,"%f",def);
-				fprintf(fp,"\n");
-			}
-			
-		}	
-		fclose(fp);
+		printf("Can not open the importc file\r\n");
+		//getch();
+		return 0;
 	} 
 	else
-	{
-		//
+	{   		
+		memset(buf, 0, MAX_PATH);
+        fgets(buf, MAX_PATH, fp);
+		strcpy(filename, buf);
 	}
 	fclose(fp);
-	
 	return 1;
 }
 
-int prepareLotteries()
+int saveImportedHisFile(char *filename)
 {
-
 	FILE *fp;
-	char filename[MAX_PATH];
 
-	sprintf(filename, "lotteries%d.txt", selectedLottery);
-
-    //打开存储文件
-	if ((fp=fopen(filename,"r"))==NULL)
+	if ((fp=fopen("importh.txt","w"))==NULL)
 	{
-		if ((fp=fopen(filename,"w"))==NULL)
-		{
-			printf("Can not write the file");
-			//getch();
-			return 0;
-		}
-		fclose(fp);
+		printf("Can not write the importh file\r\n");
+		//getch();
+		return 0;
 	} 
 	else
+	{   		
+		fprintf(fp,filename);
+	}	
+	fclose(fp);
+	return 1;
+}
+
+int getImportedHisFile(char *filename)
+{
+	FILE *fp;
+	char buf[MAX_PATH];
+
+	if ((fp=fopen("importh.txt","r"))==NULL)
 	{
-		//
+		printf("Can not open the importh file\r\n");
+		//getch();
+		return 0;
+	} 
+	else
+	{   		
+		memset(buf, 0, MAX_PATH);
+        fgets(buf, MAX_PATH, fp);
+		strcpy(filename, buf);
 	}
 	fclose(fp);
-	
 	return 1;
+
 }

@@ -12,8 +12,10 @@
 #define RESULT_PATH 20
 
 #define COMBOS_N 957
+#define IMPORT_COMBOS_WIDTH 4
+#define MAX_HISTORY_NUM 200
 
-#define PRINT_N -1//172//211//213//215//-1 //307
+#define PRINT_N 0//172//211//213//215//-1 //307
 
 #define MIN 3
 #define MAX 8

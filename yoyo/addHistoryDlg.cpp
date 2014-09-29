@@ -4,6 +4,8 @@
 #include "common.h"
 
 WNDPROC g_Edit;
+extern COMBO_YOYO *combosF;
+extern int icombosF;
 
 LRESULT CALLBACK NewEditProc (HWND hwnd, UINT message,WPARAM wParam, LPARAM lParam)
 {
@@ -48,34 +50,14 @@ static int CaculateWeight(int *parray)
 
 	for(int i = 0;i<NUMBER_TOTAL;i++){
 		pNumber[i] = 1;
-    }	
-
-	int n = getCombos();
+    }
 
 	//YOYO data
 	ULONG *numbers = (ULONG *)malloc(sizeof(ULONG)*NUMBER_TOTAL);
 	for(int i = 0;i<NUMBER_TOTAL;i++){
 		numbers[i] = 0;
 	}
-
-	COMBO_YOYO *combos = initCombo();
-
-	//for(int i = 0;i<330;i++)
-	{
-			//combos[i].weight = pWeight[i-120];
-			//printf("%d weight:%lf\n", 308, combos[307].weight);
-		
-    }
-	
-	//int parray[10][3] = {{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8}};
-	
-	staCombos(parray, pEnable, pNumber, combos, n, numbers);
-
-	for(int i = 0; i < n;i++)
-	{
-		free(combos[i].combo_array);
-	}
-	free(combos);
+	staCombos(parray, pEnable, pNumber, combosF, icombosF, numbers);
 	free(numbers);
 	return 1;
 }
@@ -102,7 +84,11 @@ int SaveEdittoFile(HWND hDlg)
       WideCharToMultiByte(CP_ACP,   0,   lpszFile,   nLen,   pFilePathName,  
 2*nLen,   NULL,   NULL);*/
 	CaculateWeight(parray);
-	return saveLottery(parray);
+	char hisf[MAX_PATH] = {0};
+	if(getImportedHisFile(hisf))
+		return saveLottery(parray, hisf);
+	else
+		return 0;
 }
 
 INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)

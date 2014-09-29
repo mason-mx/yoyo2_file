@@ -1,0 +1,250 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral (Sys. Default) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUSD)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
+#pragma code_page(936)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SELDLG DIALOGEX 0, 0, 186, 93
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "選擇種類"
+FONT 12, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "系統一",IDC_YOYO1,28,17,50,55
+    PUSHBUTTON      "系統二",IDC_YOYO2,106,17,50,55
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_SELDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Neutral (Sys. Default) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG  22, 17, 230, 75
+STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "System"
+BEGIN
+    ICON            IDI_YOYO,IDC_MYICON,14,9,16,16
+    LTEXT           "yoyo Version 1.0",IDC_STATIC,49,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2014",IDC_STATIC,49,20,119,8
+    DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
+END
+
+IDD_MAINDLG DIALOGEX 0, 0, 309, 163
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "YOYO"
+FONT 12, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "退出",IDOK,248,142,50,14
+    GROUPBOX        "往期回顧",IDC_STATIC,12,5,119,105
+    CONTROL         "3碼",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,124,28,10
+    CONTROL         "4碼",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,55,124,28,10
+    CONTROL         "5碼",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,92,124,28,10
+    CONTROL         "6碼",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,139,28,10
+    CONTROL         "8碼",IDC_CHECK8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,92,140,28,10
+    CONTROL         "7碼",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,55,139,28,10
+    PUSHBUTTON      "添加",IDC_ADDHIS,73,93,39,14
+    LISTBOX         IDC_LIST1,28,15,85,76,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST2,212,18,74,83,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "統計",IDC_STAT,212,108,75,14
+    GROUPBOX        "統計結果",IDC_STATIC,142,5,155,125
+    PUSHBUTTON      "清空",IDC_CLEAR,28,93,39,14
+    GROUPBOX        "篩選結果",IDC_STATIC,12,114,120,39
+    CONTROL         "0",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,152,19,20,10
+    CONTROL         "1",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,152,39,20,10
+    CONTROL         "2",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,152,59,20,10
+    CONTROL         "3",IDC_CHECK10,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,152,79,20,10
+    CONTROL         "4",IDC_CHECK11,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,152,99,20,10
+    CONTROL         "5",IDC_CHECK12,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,20,20,10
+    CONTROL         "6",IDC_CHECK13,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,39,20,10
+    CONTROL         "7",IDC_CHECK14,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,59,20,10
+    CONTROL         "8",IDC_CHECK15,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,79,20,10
+    CONTROL         "9",IDC_CHECK16,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,99,20,10
+END
+
+IDD_ADDHIS DIALOGEX 0, 0, 148, 78
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "添加歷史"
+FONT 12, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    PUSHBUTTON      "確定",IDOK,78,53,50,14
+    PUSHBUTTON      "取消",IDCANCEL,14,53,50,14
+    EDITTEXT        IDC_EDIT1,22,17,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT2,50,17,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT3,78,17,20,14,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_MAINDLG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 290
+    END
+
+    IDD_ADDHIS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 141
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 71
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_YOYO                ICON                    "yoyo.ico"
+IDI_SMALL               ICON                    "small.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_YOYO MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       IDM_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About ...",                  IDM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_YOYO ACCELERATORS 
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "yoyo"
+    IDC_YOYO                "YOYO"
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

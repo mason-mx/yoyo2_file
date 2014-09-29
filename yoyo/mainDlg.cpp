@@ -38,7 +38,6 @@ static int ImportCombos(HWND hDlg)
     if(0 == GetOpenFileNameA(&ofn))
 		return 0;
 
-	saveImportedCombosFile(Buffer);
 	icombosF = getCombos(Buffer);
 
 	if(icombosF < 1) return 0;
@@ -46,6 +45,7 @@ static int ImportCombos(HWND hDlg)
 	char hisf[MAX_PATH] = {0};
 	if(getImportedCombosFile(hisf))
 		combosInBeforeImported = getCombos(hisf);
+	saveImportedCombosFile(Buffer);
 	if(combosFileImported)
 	{
 		for(int i = 0; i < combosInBeforeImported;i++)

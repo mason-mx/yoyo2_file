@@ -60,7 +60,7 @@ static int ImportCombos(HWND hDlg)
 	}
 
 	TCHAR combosn[MAX_PATH] = {0};
-	swprintf(combosn,TEXT("共有%d個4碼組合"),icombosF);
+	swprintf(combosn,TEXT("已導入%d個4碼組合"),icombosF);
 	SetWindowText(GetDlgItem(hDlg, IDC_IMPORTCFILE), combosn);
 	
 	//Reset all weight
@@ -68,11 +68,22 @@ static int ImportCombos(HWND hDlg)
 
 	sprintf(filename, "%d_w.txt", selectedLottery);
 	remove(filename);
+	sprintf(filename, "%d_h.txt", selectedLottery);
+	remove(filename);
+	sprintf(filename, "%d_mnh.txt", selectedLottery);
+	remove(filename);
 	prepareWeight(icombosF);
+	prepareHit(icombosF);
+	prepareMaxNoHit();
+	SetWindowText(GetDlgItem(hDlg, IDC_HISN), L"");
+	SetWindowText(GetDlgItem(hDlg, IDC_ALERT), L"");
 
 	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
 
 	combosF = initCombo(icombosF, Buffer);	
+
+	MessageBox(hDlg, TEXT("請重新導入歷史出獎號，或者手動添加！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
+	SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), TEXT("無記錄"));
 
 	return icombosF;
 }
@@ -122,7 +133,7 @@ static int ImportHis(HWND hDlg)
 
 	hisFileImported = 1;
 	TCHAR hisn[MAX_PATH] = {0};
-	swprintf(hisn,TEXT("共有%d個歷史出獎號"),rel);
+	swprintf(hisn,TEXT("已導入%d個歷史出獎號"),rel);
 	SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), hisn);
 	for(int i = 0;i<(MAX-MIN+1);i++){
 		pEnable[i] = 1;
@@ -136,11 +147,20 @@ static int ImportHis(HWND hDlg)
 
 	sprintf(filename, "%d_w.txt", selectedLottery);
 	remove(filename);
+	sprintf(filename, "%d_h.txt", selectedLottery);
+	remove(filename);
+	sprintf(filename, "%d_mnh.txt", selectedLottery);
+	remove(filename);
 	prepareWeight(icombosF);
+	prepareHit(icombosF);
+	prepareMaxNoHit();
+	SetWindowText(GetDlgItem(hDlg, IDC_HISN), L"");
+	SetWindowText(GetDlgItem(hDlg, IDC_ALERT), L"");
 
 	for(int i = 0; i < icombosF;i++)
 	{
 		combosF[i].weight = 1.0;
+		combosF[i].nohit = 0;
 	}
 
 	//YOYO data
@@ -155,15 +175,24 @@ static int ImportHis(HWND hDlg)
 			numbers[i] = 0;
 		}
 		staCombos(lotteries[i], pEnable, pNumber, combosF, icombosF, numbers);
+		int noHit = staHit(combosF, icombosF);
+		if(parseMaxNoHit() < noHit) saveMaxNoHit(noHit);
+		if(ALERT_TH <= noHit)
+		{	
+			TCHAR combosn[MAX_PATH] = {0};
+			swprintf(combosn,TEXT("警告！已有最大%d期不中的情況"),noHit);
+			SetWindowText(GetDlgItem(hDlg, IDC_ALERT), combosn);
+		}
 	}
 	free(numbers);
+
 	return 1;
 }
 
 static int ShowResult(HWND hDlg)
 {
 	TCHAR pRel[NUMBER_TOTAL][RESULT_PATH] = {0};
-	int lotteries[LOTTERIES_ROW][3] = {0};
+	int lotteries[MAX_HISTORY_NUM][3] = {0};
 	int j = NUMBER_TOTAL, total = 0, pEnable[MAX-MIN+1] = {0}, pNumber[NUMBER_TOTAL] = {0};
 
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST2);
@@ -228,8 +257,8 @@ static int ShowResult(HWND hDlg)
 
 static int ShowLotteryHistory(HWND hDlg)
 {
-	int lotteries[LOTTERIES_ROW][3] = {0};
-	TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH] = {0};
+	int lotteries[MAX_HISTORY_NUM][3] = {0};
+	TCHAR pLotteries[MAX_HISTORY_NUM][HISTORY_PATH] = {0};
 	int rel = 0;
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
 	if(hisFileImported)
@@ -244,6 +273,9 @@ static int ShowLotteryHistory(HWND hDlg)
 	}
 	if(rel > 0)
 	{
+		TCHAR hisn[MAX_PATH] = {0};
+		swprintf(hisn,TEXT("當前共%d期："),rel);
+		SetWindowText(GetDlgItem(hDlg, IDC_HISN), hisn);
 		SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
 
 		for (int i = 0 ; i < rel ; i++)
@@ -260,6 +292,10 @@ static void ClearLotteryHistory(HWND hDlg)
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
 	sprintf(filename, "%d_w.txt", selectedLottery);
 	remove(filename);
+	sprintf(filename, "%d_h.txt", selectedLottery);
+	remove(filename);
+	sprintf(filename, "%d_mnh.txt", selectedLottery);
+	remove(filename);
 	sprintf(filename, "lotteries%d.txt", selectedLottery);
 	remove(filename);
 	/*if(hisFileImported)
@@ -270,11 +306,16 @@ static void ClearLotteryHistory(HWND hDlg)
 	for(int i = 0; i < icombosF;i++)
 	{
 		combosF[i].weight = 1.0;
+		combosF[i].nohit = 0;
 	}
 	hisFileImported = 0;
 	prepareLotteries();
 	remove("importh.txt");
 	prepareWeight(icombosF);
+	prepareHit(icombosF);
+	prepareMaxNoHit();
+	SetWindowText(GetDlgItem(hDlg, IDC_HISN), L"");
+	SetWindowText(GetDlgItem(hDlg, IDC_ALERT), L"");
 	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
 	MessageBox(hDlg, TEXT("請重新導入歷史出獎號，或者手動添加！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
 	SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), TEXT("無記錄"));
@@ -317,15 +358,17 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				//printf("%u\n",ULONG_MAX); %u up to 4294967295
 				char combosf[MAX_PATH] = {0};
 				char hisf[MAX_PATH] = {0};
+				TCHAR combosn[MAX_PATH] = {0};
 				if(getImportedCombosFile(combosf))
 				{
 					combosFileImported = 1;
 					icombosF = getCombos(combosf);
 					prepareWeight(icombosF);
+					prepareHit(icombosF);
+					prepareMaxNoHit();
 					combosF = initCombo(icombosF, combosf);
 
-					TCHAR combosn[MAX_PATH] = {0};
-					swprintf(combosn,TEXT("共有%d個4碼組合"),icombosF);
+					swprintf(combosn,TEXT("已導入%d個4碼組合"),icombosF);
 					SetWindowText(GetDlgItem(hDlg, IDC_IMPORTCFILE), combosn);
 				}
 				else
@@ -340,7 +383,7 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					{
 						hisFileImported = 1;
 						TCHAR hisn[MAX_PATH] = {0};
-						swprintf(hisn,TEXT("共有%d個歷史出獎號"),rel);
+						swprintf(hisn,TEXT("已導入%d個歷史出獎號"),rel);
 						SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), hisn);
 					}
 				}
@@ -349,6 +392,15 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					SetWindowText(GetDlgItem(hDlg, IDC_IMPORTHFILE), TEXT("無記錄"));
 				}
 				ShowLotteryHistory(hDlg);
+				
+				int maxNoHit = parseMaxNoHit();
+				if(ALERT_TH <= maxNoHit)
+				{	
+					//TCHAR combosn[MAX_PATH] = {0};
+					swprintf(combosn,TEXT("警告！已有最大%d期不中的情況！"), maxNoHit);
+					SetWindowText(GetDlgItem(hDlg, IDC_ALERT), combosn);
+					
+				}
 			}
 			return (INT_PTR)TRUE;
 		case WM_COMMAND:
@@ -371,6 +423,15 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					if ( IDOK == DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDHIS), hDlg, AddHisDlgProc))
 					{
 						ShowLotteryHistory(hDlg);
+						int noHit = staHit(combosF, icombosF);
+						if(parseMaxNoHit() < noHit) saveMaxNoHit(noHit);
+						if(ALERT_TH <= noHit)
+						{	
+							TCHAR combosn[MAX_PATH] = {0};
+							swprintf(combosn,TEXT("警告！已有最大%d期不中的情況"),noHit);
+							SetWindowText(GetDlgItem(hDlg, IDC_ALERT), combosn);
+							
+						}
 					}
 					break;
 				case IDC_STAT:

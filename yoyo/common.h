@@ -10,6 +10,7 @@ int parseLottery(char *filename, int pArray[MAX_HISTORY_NUM][3], TCHAR pLotterie
 int saveLottery(int* pArray);
 int saveLottery(int* pArray, char *filename);
 int prepareWeight(int combo_n);
+int prepareHit(int combo_n);
 int prepareLotteries();
 int parseWeight(double pArray[COMBOS_N]);
 int staWeight(int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int n, ULONG *numbers);
@@ -17,3 +18,7 @@ int saveImportedCombosFile(char *filename);
 int getImportedCombosFile(char *filename);
 int saveImportedHisFile(char *filename);
 int getImportedHisFile(char *filename);
+int staHit(COMBO_YOYO *pcombos, int n);
+int prepareMaxNoHit();
+int saveMaxNoHit(int MaxNoHit);
+int parseMaxNoHit();

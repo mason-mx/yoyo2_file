@@ -359,6 +359,8 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				char combosf[MAX_PATH] = {0};
 				char hisf[MAX_PATH] = {0};
 				TCHAR combosn[MAX_PATH] = {0};
+				combosFileImported = 0;
+				hisFileImported = 0;
 				if(getImportedCombosFile(combosf))
 				{
 					combosFileImported = 1;
@@ -420,22 +422,36 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					}
 					return TRUE;
 				case IDC_ADDHIS:
-					if ( IDOK == DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDHIS), hDlg, AddHisDlgProc))
+					if(combosFileImported)
 					{
-						ShowLotteryHistory(hDlg);
-						int noHit = staHit(combosF, icombosF);
-						if(parseMaxNoHit() < noHit) saveMaxNoHit(noHit);
-						if(ALERT_TH <= noHit)
-						{	
-							TCHAR combosn[MAX_PATH] = {0};
-							swprintf(combosn,TEXT("警告！已有最大%d期不中的情況"),noHit);
-							SetWindowText(GetDlgItem(hDlg, IDC_ALERT), combosn);
-							
+						if ( IDOK == DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDHIS), hDlg, AddHisDlgProc))
+						{
+							ShowLotteryHistory(hDlg);
+							int noHit = staHit(combosF, icombosF);
+							if(parseMaxNoHit() < noHit) saveMaxNoHit(noHit);
+							if(ALERT_TH <= noHit)
+							{	
+								TCHAR combosn[MAX_PATH] = {0};
+								swprintf(combosn,TEXT("警告！已有最大%d期不中的情況"),noHit);
+								SetWindowText(GetDlgItem(hDlg, IDC_ALERT), combosn);
+								
+							}
 						}
+					}
+					else
+					{
+						MessageBox(hDlg, TEXT("請導入4碼組合後再操作！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
 					}
 					break;
 				case IDC_STAT:
-					ShowResult(hDlg);
+					if(combosFileImported)
+					{
+						ShowResult(hDlg);
+					}
+					else
+					{
+						MessageBox(hDlg, TEXT("請導入4碼組合後再操作！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
+					}
 					break;
 				case IDC_CLEAR:
 					ClearLotteryHistory(hDlg);						

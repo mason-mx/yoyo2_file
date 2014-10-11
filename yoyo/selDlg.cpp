@@ -53,12 +53,12 @@ INT_PTR CALLBACK SelDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					}
 					return TRUE;
 				case IDC_YOYO1:
-					selectedLottery = 0;
+					selectedLottery = 50;
 					///SendMessage(hDlg, WM_CLOSE, 0, 0);
 					DialogBox(hInst, MAKEINTRESOURCE(IDD_MAINDLG), hDlg, MainDialogProc);					
 					break;
 				case IDC_YOYO2:
-					selectedLottery = 1;
+					selectedLottery = 51;
 					///SendMessage(hDlg, WM_CLOSE, 0, 0);
 					DialogBox(hInst, MAKEINTRESOURCE(IDD_MAINDLG), hDlg, MainDialogProc);					
 					break;

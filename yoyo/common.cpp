@@ -999,7 +999,7 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 			}
 		}
 		//printf("]");
-		if(hit == 0)
+		if((hit == 0) || (hit == 1))
 		{pcombos[i].nohit ++;}
 		else
 		{pcombos[i].nohit = 0;}
